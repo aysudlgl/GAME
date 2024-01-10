@@ -1,0 +1,40 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: url('layerbackground.jpg') no-repeat center center fixed;
+  background-size: cover;
+  overflow: hidden; /* Optional: hides scrollbars */
+}
+
+#canvas1 {
+  border: 10px solid black;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #f58208;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+#layer1 {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: fixed;
+  top: 0;
+  left: 0;
+  opacity: 0.5; 
+
+#angler1 {
+  width: 50px; 
+  height: 50px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
