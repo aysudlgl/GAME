@@ -3,7 +3,9 @@
   padding: 0;
   box-sizing: border-box;
 }
-
+#game-container {
+  background-color: rgba(0, 0, 0, 0); /* Set background color with alpha value for transparency */
+}
 body {
   background: url('layerbackground.jpg') no-repeat center center fixed;
   background-size: cover;
@@ -29,6 +31,7 @@ body {
   top: 0;
   left: 0;
   opacity: 0.5; 
+}
 
 #angler1 {
   width: 50px; 
