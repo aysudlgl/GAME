@@ -10,8 +10,10 @@ class InputHandler {
         this.game = game;
         window.addEventListener('keydown', e => {
             if(((e.key === 'ArrowUp') ||
-               (e.key === 'ArrowDown')
-            )&& this.game.keys.indexOf(e.key) === -1){
+               (e.key === 'ArrowDown') ||
+               (e.key === 'w') ||
+               (e.key === 's') 
+         ) && this.game.keys.indexOf(e.key) === -1){
                 this.game.keys.push(e.key);
             } else if (e.key === ' '){
                 this.game.player.shootTop(); 
@@ -41,7 +43,7 @@ class Projectile {
             if (this.x > this.game.width *0.8) this.markedForDeletion = true;
         }
         draw(context){
-            context.fillStyle = 'yellow';
+            context.fillStyle = 'red';
             context.fillRect(this.x, this.y, this.width, this.height);
         }
 }
@@ -88,7 +90,7 @@ class Player{
             this.y += this.speedY;
         }
         draw(context) {
-            context.strokeRect(this.x, this.y, this.width, this.height);
+           
             context.drawImage(
                 this.image,
                 this.frameX * this.width, this.frameY * this.height, this.width, this.height,
@@ -105,6 +107,65 @@ class Player{
             this.game.ammo--;
         }
     }
+}
+class Player2{
+    constructor(game){
+        this.game = game;
+        this.width = 200;
+        this.height = 300;
+        //horizontal x coordinates and vertical y cordinates below
+        this.x = this.game.width - this.width - 20;
+        this.y = 100;
+        this.frameX = 0;
+        this.frameY = 0;
+        this.maxFrame = 37;
+        this.speedY = 0;
+        this.maxSpeed = 1;
+        this.projectiles = [];
+        this.image = document.getElementById('player2'); 
+
+    }
+    update() {
+        if (this.game.keys.includes('w')) this.speedY = -1;
+        else if (this.game.keys.includes('s')) this.speedY = 1;
+        else this.speedY = 0;
+    
+        // handle projectile
+        this.projectiles.forEach(Projectile => {
+            Projectile.update();
+        });
+        this.projectiles = this.projectiles.filter(Projectile => !Projectile.markedForDeletion);
+    
+        // increase vertical y position on the player by speedY
+        // sprite animation with a slower frame change rate
+        if (this.frameX % 3 === 0) {
+            if (this.frameX < this.maxFrame) {
+                this.frameX++;
+            } else {
+                this.frameX = 0;
+            }
+        }
+    
+        this.y += this.speedY;
+    }
+    draw(context) {
+       
+        context.drawImage(
+            this.image,
+            this.frameX * this.width, this.frameY * this.height, this.width, this.height,
+            this.x, this.y, this.width, this.height
+        );
+    
+        this.projectiles.forEach(projectile => {
+            projectile.draw(context);
+        });
+    }
+    shootTop(){
+        if (this.game.ammo > 0 ){
+        this.projectiles.push(new Projectile (this.game, this.x, this.y));
+        this.game.ammo--;
+    }
+}
 }
 // for enemy types
 class Enemy{
@@ -130,10 +191,10 @@ if (this.frameX < this.maxFrame){
 else this.frameX = 0;
 }
 draw (context) {
-    context.strokeRect(this.x, this.y, this.width, this.height);
-    context.drawImage(this.image, this.frameX * this.width, this.frameY * this.height, this.width, this.height);
+    context.drawImage(this.image, this.x, this.y, this.width, this.height);
     context.font = '20px Helvetica';
     context.fillText(this.lives, this.x, this.y);
+
 }
 }
 class BallEnemy extends Enemy {
@@ -142,7 +203,7 @@ class BallEnemy extends Enemy {
         this.width = 50;
         this.height = 50;
         this.y = Math.random() * (this.game.height * 0.9 - this.height);
-        this.image = document.getElementById('ballEnemy'); // Make sure to set the correct ID for your ball PNG
+        this.image = document.getElementById('Angler1'); // Make sure to set the correct ID for your ball PNG
         this.speedX = Math.random() * 1.5 + 0.5; // Change speed and direction
     }
 }
@@ -250,6 +311,7 @@ class Game{
         this.input = new InputHandler(this);
         this.ui = new UI(this)
         this.background = new Background(this);
+        this.player2 = new Player2(this);
         this.keys = [];
         this.enemies = [];
         this.enemyTimer = 0;
@@ -262,7 +324,7 @@ class Game{
         this.score = 0;
         this.winningScore = 10;
         this.gameTime = 0;
-        this.timeLimit = 5000;
+        this.timeLimit = 15000;
         this.speed = 1;
     }
     addEnemy() {
@@ -273,6 +335,7 @@ class Game{
         if(this.gameTime > this.timeLimit) this.gameOver = true;
         this.background.update();
         this.player.update();
+        this.player2.update();
         if (this.ammoTimer > this.ammoInterval){
             if (this.ammo < this.maxAmmo) this.ammo++;
             this.ammoTimer = 0;
@@ -308,6 +371,7 @@ class Game{
     draw(context){
         this.background.draw(context);
         this.player.draw(context);
+        this.player2.draw(context);
         this.ui.draw(context);
         this.enemies.forEach(enemy => { enemy.draw(context); 
         }); 
@@ -339,3 +403,4 @@ function  animate(timeStamp){
 }
 animate(0);
 }) ;
+
